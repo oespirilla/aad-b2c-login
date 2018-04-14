@@ -12,14 +12,7 @@ from home import app, oauth
 
 microsoft = oauth.remote_app(
 	'microsoft',
-	consumer_key='8600e3dd-ca50-4abd-b1aa-d53ddfdb2cfb',
-	consumer_secret='xxxxxxxxxxx',
-	request_token_params={'scope': 'offline_access User.Read'},
-	base_url='https://graph.microsoft.com/v1.0/',
-	request_token_url=None,
-	access_token_method='POST',
-	access_token_url='https://login.microsoftonline.com/common/oauth2/v2.0/token',
-	authorize_url='https://login.microsoftonline.com/common/oauth2/v2.0/authorize'
+	
 )
 
 
@@ -46,11 +39,12 @@ def logout():
 def authorized():
 
     response = microsoft.authorized_response()
+    print('response:.... ', response)
+    
     if response is None or response.get('access_token') is None:
         return "Access Denied: Reason=%s\nError=%s" % (response.get('error'),request.get('error_description'))
 
-    session['aad_token'] = (response['access_token'], '')
-
+    session['aad_token'] = (response.get('access_token'), '')
     return redirect(url_for('home'))
 
 @microsoft.tokengetter
@@ -59,5 +53,5 @@ def get_oauth_token():
 
 @app.route('/me')
 def me():
-	me = microsoft.get('me')
-	return str(me.data)
+	me = microsoft.get('read')
+	return str(me.data) + '......' + str(session.get('aad_token'))
